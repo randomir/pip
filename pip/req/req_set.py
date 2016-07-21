@@ -144,7 +144,7 @@ class RequirementSet(object):
                  ignore_dependencies=False, force_reinstall=False,
                  use_user_site=False, session=None, pycompile=True,
                  isolated=False, wheel_download_dir=None,
-                 wheel_cache=None, require_hashes=False):
+                 wheel_cache=None, require_hashes=False, build_delete=True):
         """Create a RequirementSet.
 
         :param wheel_download_dir: Where still-packed .whl files should be
@@ -164,6 +164,7 @@ class RequirementSet(object):
             )
 
         self.build_dir = build_dir
+        self.build_delete = build_delete
         self.src_dir = src_dir
         # XXX: download_dir and wheel_download_dir overlap semantically and may
         # be combined if we're willing to have non-wheel archives present in
@@ -565,8 +566,10 @@ class RequirementSet(object):
 
                 try:
                     download_dir = self.download_dir
-                    # We always delete unpacked sdists after pip ran.
-                    autodelete_unpacked = True
+                    # We always delete unpacked sdists after pip ran,
+                    # *except* when install is running with `--no-clean` or
+                    # `--build` dir specified.
+                    autodelete_unpacked = self.build_delete
                     if req_to_install.link.is_wheel \
                             and self.wheel_download_dir:
                         # when doing 'pip wheel` we download wheels to a

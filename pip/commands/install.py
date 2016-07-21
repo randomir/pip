@@ -280,6 +280,7 @@ class InstallCommand(RequirementCommand):
                     isolated=options.isolated_mode,
                     wheel_cache=wheel_cache,
                     require_hashes=options.require_hashes,
+                    build_delete=build_delete,
                 )
 
                 self.populate_requirement_set(
